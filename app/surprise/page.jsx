@@ -1,8 +1,9 @@
 import PhotoTimeline from "@/components/PhotoTimeline";
 import LoveLetter from "@/components/LoveLetter";
-import Playlist from "@/components/Playlist";
+// import Playlist from "@/components/Playlist";
 import BirthdayCake from "@/components/BirthdayCake";
-import ShareLink from "@/components/ShareLink";
+import WallTeaser from "@/components/WallTeaser";
+// import ShareLink from "@/components/ShareLink";
 import { site } from "@/lib/content";
 
 export default function SurprisePage() {
@@ -19,9 +20,10 @@ export default function SurprisePage() {
 
       <PhotoTimeline />
       <LoveLetter />
-      <Playlist />
+      {/* <Playlist /> */}
       <BirthdayCake />
-      <ShareLink />
+      <WallTeaser />
+      {/* <ShareLink /> */}
 
       <footer className="text-center pb-10 pt-4">
         <p className="text-plum-light/50 text-xs">
@@ -31,3 +33,4 @@ export default function SurprisePage() {
     </main>
   );
 }
+

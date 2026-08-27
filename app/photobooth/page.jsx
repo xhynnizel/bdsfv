@@ -1,56 +1,78 @@
 "use client";
 
 import { useState } from "react";
-import GridPicker from "@/components/photobooth/GridPicker";
-import CameraCapture from "@/components/photobooth/CameraCapture";
-import FilterPicker from "@/components/photobooth/FilterPicker";
-import FrameChooser from "@/components/photobooth/FrameChooser";
-import ResultScreen from "@/components/photobooth/ResultScreen";
-import { composePhotoGrid } from "@/lib/composePhoto";
+import MessageStep from "@/components/photobooth/MessageStep";
+import CaptureScreen from "@/components/photobooth/CaptureScreen";
+import DecorateStep from "@/components/photobooth/DecorateStep";
+import { composeStrip } from "@/lib/composePhoto";
+import { compressImageDataUrl } from "@/lib/compressImage";
+import { submitWish } from "@/lib/wishes";
+import { isFirebaseConfigured } from "@/lib/firebase";
+import { frameColors } from "@/lib/frameColors";
 import { site } from "@/lib/content";
-import { filters as filterOptions } from "@/lib/filters";
-import { gridLayouts } from "@/lib/gridLayouts";
 
 export default function PhotoboothPage() {
-  const [step, setStep] = useState("intro");
-  const [layout, setLayout] = useState(gridLayouts[0]);
-  const [photos, setPhotos] = useState([]);
-  const [filter, setFilter] = useState(filterOptions[0]);
-  const [resultUrl, setResultUrl] = useState(null);
-  const [busy, setBusy] = useState(false);
+  const [step, setStep] = useState("message"); // "message" | "capture" | "decorate"
 
-  const handleLayoutSelect = (chosenLayout) => {
+  const [name, setName] = useState("");
+  const [message, setMessage] = useState("");
+
+  const [layout, setLayout] = useState(null); // chosen inside CaptureScreen's Grid panel
+  const [photos, setPhotos] = useState([]); // empty until a photo is attached
+  const [frameSelection, setFrameSelection] = useState({
+    type: "color",
+    value: frameColors[0].value,
+    id: frameColors[0].id,
+  });
+  const [placedStickers, setPlacedStickers] = useState([]);
+  const [frameOverlay, setFrameOverlay] = useState(null);
+
+  const [finalUrl, setFinalUrl] = useState(null);
+  const [sendStatus, setSendStatus] = useState("idle"); // idle | sending | sent | error
+
+  const configured = isFirebaseConfigured();
+  const hasPhoto = layout && photos.length > 0 && photos.every(Boolean);
+
+  const renderFinal = async () => {
+    if (!hasPhoto) return null;
+    const url = await composeStrip(photos, frameSelection, frameOverlay, placedStickers);
+    setFinalUrl(url);
+    return url;
+  };
+
+  const handleAttachPhoto = () => setStep("capture");
+
+  const handleCaptureComplete = (chosenLayout, shots) => {
     setLayout(chosenLayout);
-    setPhotos([]);
-    setStep("capture");
-  };
-
-  const handleCaptureComplete = (shots) => {
     setPhotos(shots);
-    setStep("filter");
+    setFinalUrl(null);
+    setStep("decorate");
   };
 
-  const handleFilterComplete = (chosenFilter) => {
-    setFilter(chosenFilter);
-    setStep("frame");
+  const handleDownload = async () => {
+    const url = finalUrl || (await renderFinal());
+    if (!url) return;
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "birthday-photobooth.png";
+    a.click();
   };
 
-  const handleFrameComplete = async (frame) => {
-    setBusy(true);
+  const handleSend = async () => {
+    if (sendStatus === "sending") return;
+    setSendStatus("sending");
     try {
-      const url = await composePhotoGrid(photos, filter.css, frame, layout);
-      setResultUrl(url);
-      setStep("result");
-    } finally {
-      setBusy(false);
+      let compressedPhoto = null;
+      if (hasPhoto) {
+        const url = finalUrl || (await renderFinal());
+        compressedPhoto = await compressImageDataUrl(url);
+      }
+      await submitWish({ name, message, photo: compressedPhoto });
+      setSendStatus("sent");
+      setStep("message");
+    } catch {
+      setSendStatus("error");
     }
-  };
-
-  const restart = () => {
-    setPhotos([]);
-    setFilter(filterOptions[0]);
-    setResultUrl(null);
-    setStep("intro");
   };
 
   return (
@@ -60,66 +82,51 @@ export default function PhotoboothPage() {
           {site.boyfriendName}'s birthday
         </p>
         <h1 className="font-display text-3xl md:text-4xl text-plum">
-          Photobooth
+          {step === "message" ? "Send a message" : step === "capture" ? "Photobooth" : "Decorate"}
         </h1>
-        {step === "intro" && (
-          <p className="text-plum-light text-sm mt-3 max-w-xs mx-auto">
-            Pick a layout, take a few quick photos, then add a filter and a
-            frame before downloading your strip.
-          </p>
-        )}
       </header>
 
-      {step === "intro" && (
-        <button
-          onClick={() => setStep("grid")}
-          className="px-7 py-3.5 rounded-full bg-plum text-cream font-body font-semibold text-sm shadow-md hover:bg-plum-light transition-colors"
-        >
-          Start photobooth
-        </button>
-      )}
-
-      {step === "grid" && (
-        <GridPicker onSelect={handleLayoutSelect} onBack={() => setStep("intro")} />
+      {step === "message" && (
+        <MessageStep
+          name={name}
+          message={message}
+          onNameChange={setName}
+          onMessageChange={setMessage}
+          attachedPreviewUrl={hasPhoto ? finalUrl : null}
+          onAttachPhoto={handleAttachPhoto}
+          onSend={handleSend}
+          sendStatus={sendStatus}
+          configured={configured}
+        />
       )}
 
       {step === "capture" && (
-        <CameraCapture layout={layout} onComplete={handleCaptureComplete} />
+        <CaptureScreen
+          onComplete={handleCaptureComplete}
+          onBack={() => setStep("message")}
+        />
       )}
 
-      {step === "filter" && (
-        <FilterPicker
+      {step === "decorate" && layout && (
+        <DecorateStep
           photos={photos}
           layout={layout}
-          onComplete={handleFilterComplete}
+          frameSelection={frameSelection}
+          setFrameSelection={setFrameSelection}
+          placedStickers={placedStickers}
+          setPlacedStickers={setPlacedStickers}
+          frameOverlay={frameOverlay}
+          setFrameOverlay={setFrameOverlay}
+          name={name}
+          message={message}
+          onNameChange={setName}
+          onMessageChange={setMessage}
+          onDownload={handleDownload}
+          onSend={handleSend}
+          sendStatus={sendStatus}
+          configured={configured}
           onBack={() => setStep("capture")}
         />
-      )}
-
-      {step === "frame" && (
-        <FrameChooser
-          onComplete={handleFrameComplete}
-          onBack={() => setStep("filter")}
-          busy={busy}
-        />
-      )}
-
-      {step === "result" && resultUrl && (
-        <ResultScreen imageUrl={resultUrl} onRestart={restart} />
-      )}
-
-      {/* progress dots */}
-      {step !== "intro" && step !== "result" && (
-        <div className="flex gap-2 mt-10">
-          {["grid", "capture", "filter", "frame"].map((s) => (
-            <span
-              key={s}
-              className={`w-2 h-2 rounded-full transition-colors ${
-                s === step ? "bg-plum" : "bg-lavender-light"
-              }`}
-            />
-          ))}
-        </div>
       )}
     </main>
   );
