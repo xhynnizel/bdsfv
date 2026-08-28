@@ -28,7 +28,7 @@ export default function Home() {
         subtitle="Enter the password to continue"
         onUnlock={() => router.push("/surprise")}
       >
-        {/* PasswordGate renders this once unlocked — router.push already fired via onUnlock */}
+        {/* PasswordGate renders this once unlocked —  router.push already fired via onUnlock */}
         <main className="min-h-[100dvh] flex items-center justify-center px-5">
           <p className="text-center text-plum-light text-sm">Opening…</p>
         </main>
