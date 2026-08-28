@@ -277,8 +277,9 @@ export default function DecorateStep({
               {sendStatus === "sending" ? "Sending…" : "Send"}
             </button>
             <button
+              disabled={!name.trim().length}
               onClick={() => setShowMessageModal(true)}
-              className="px-6 py-3 rounded-full border-2 border-lavender-dark text-plum font-body font-semibold text-sm hover:bg-lavender-light/50 transition-colors"
+              className="px-6 py-3 rounded-full border-2 border-lavender-dark text-plum font-body font-semibold text-sm hover:bg-lavender-light/50 transition-colors disabled:opacity-50"
             >
               Preview message
             </button>

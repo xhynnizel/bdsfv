@@ -7,8 +7,11 @@ import { useEffect, useState } from "react";
  * client-side check — good enough to keep casual visitors out, but not a
  * real auth system (anyone determined enough could dig through devtools).
  * Fine for a private birthday page; don't rely on it for anything sensitive.
+ *
+ * onUnlock: optional callback fired once, right when the gate unlocks —
+ * either from a stored session or a correct password submit.
  */
-export default function PasswordGate({ password, storageKey, title, subtitle, children }) {
+export default function PasswordGate({ password, storageKey, title, subtitle, onUnlock, children }) {
   const [unlocked, setUnlocked] = useState(false);
   const [checkedStorage, setCheckedStorage] = useState(false);
   const [input, setInput] = useState("");
@@ -18,11 +21,13 @@ export default function PasswordGate({ password, storageKey, title, subtitle, ch
     try {
       if (sessionStorage.getItem(storageKey) === "unlocked") {
         setUnlocked(true);
+        onUnlock?.();
       }
     } catch {
       // sessionStorage unavailable (e.g. private browsing edge cases) — no big deal
     }
     setCheckedStorage(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storageKey]);
 
   const handleSubmit = (e) => {
@@ -35,6 +40,7 @@ export default function PasswordGate({ password, storageKey, title, subtitle, ch
       } catch {
         // ignore
       }
+      onUnlock?.();
     } else {
       setError(true);
     }

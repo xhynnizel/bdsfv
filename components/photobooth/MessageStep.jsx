@@ -14,6 +14,7 @@ export default function MessageStep({
   configured,
 }) {
   const canSend = name.trim().length > 0 && message.trim().length > 0;
+  const canAttachPhoto = name.trim().length > 0;
 
   if (sendStatus === "sent") {
     return (
@@ -39,7 +40,7 @@ export default function MessageStep({
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor="name" className="text-xs text-plum-light font-body">
-            Your name
+            Your name <span className="text-rose">*</span>
           </label>
           <input
             id="name"
@@ -67,6 +68,12 @@ export default function MessageStep({
         </div>
       </div>
 
+      {!canAttachPhoto && (
+        <p className="text-plum-light text-xs text-center bg-lavender/10 rounded-lg px-3 py-2 w-full">
+          Fill in your name to attach a photo
+        </p>
+      )}
+
       {!configured && (
         <p className="text-rose text-xs text-center bg-rose/10 rounded-lg px-3 py-2 w-full">
           The memory wall isn't set up yet — ask whoever made this site to
@@ -83,7 +90,8 @@ export default function MessageStep({
       <div className="flex gap-3">
         <button
           onClick={onAttachPhoto}
-          className="px-6 py-3 rounded-full border-2 border-lavender-dark text-plum font-body font-semibold text-sm hover:bg-lavender-light/50 transition-colors"
+          disabled={!canAttachPhoto}
+          className="px-6 py-3 rounded-full border-2 border-lavender-dark text-plum font-body font-semibold text-sm hover:bg-lavender-light/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {attachedPreviewUrl ? "Change photo" : "Attach a photo"}
         </button>

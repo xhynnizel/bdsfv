@@ -3,8 +3,10 @@ import LoveLetter from "@/components/LoveLetter";
 // import Playlist from "@/components/Playlist";
 import BirthdayCake from "@/components/BirthdayCake";
 import WallTeaser from "@/components/WallTeaser";
+
+import MusicToggle from "@/components/MusicToggle";
 // import ShareLink from "@/components/ShareLink";
-import { site } from "@/lib/content";
+import { site, wall } from "@/lib/content";
 
 export default function SurprisePage() {
   return (
@@ -25,6 +27,7 @@ export default function SurprisePage() {
       <WallTeaser />
       {/* <ShareLink /> */}
 
+      <MusicToggle src={wall.musicSrc} />
       <footer className="text-center pb-10 pt-4">
         <p className="text-plum-light/50 text-xs">
           made with love, one line of code at a time

@@ -3,19 +3,38 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { site } from "@/lib/content";
+import { site, wall } from "@/lib/content";
+import PasswordGate from "@/components/PasswordGate";
 
 export default function Home() {
   const router = useRouter();
-  const [opening, setOpening] = useState(false);
+  // step: "idle" (notification card) -> "opening" (brief animation) -> "password" (gate)
+  const [step, setStep] = useState("idle");
 
   const handleOpen = () => {
-    if (opening) return;
-    setOpening(true);
+    if (step !== "idle") return;
+    setStep("opening");
     setTimeout(() => {
-      router.push("/surprise");
+      setStep("password");
     }, 950);
   };
+
+  if (step === "password") {
+    return (
+      <PasswordGate
+        password={wall.password}
+        storageKey="home-unlocked"
+        title={`For ${site.boyfriendName} 💌`}
+        subtitle="Enter the password to continue"
+        onUnlock={() => router.push("/surprise")}
+      >
+        {/* PasswordGate renders this once unlocked — router.push already fired via onUnlock */}
+        <main className="min-h-[100dvh] flex items-center justify-center px-5">
+          <p className="text-center text-plum-light text-sm">Opening…</p>
+        </main>
+      </PasswordGate>
+    );
+  }
 
   return (
     <main className="min-h-[100dvh] flex items-center justify-center px-5 py-10 overflow-hidden">
@@ -32,7 +51,7 @@ export default function Home() {
 
       <div className="w-full max-w-sm">
         <AnimatePresence mode="wait">
-          {!opening ? (
+          {step === "idle" ? (
             <motion.button
               key="notification"
               onClick={handleOpen}
@@ -63,6 +82,7 @@ export default function Home() {
               key="opening"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               className="w-full flex flex-col items-center gap-4"
             >
               <motion.div
@@ -80,7 +100,7 @@ export default function Home() {
           )}
         </AnimatePresence>
 
-        {!opening && (
+        {step === "idle" && (
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

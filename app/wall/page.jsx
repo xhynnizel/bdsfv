@@ -21,31 +21,31 @@ function WishCard({ wish, index }) {
   if (!wish.photo) {
     return (
       <div
-        className={`break-inside-avoid mb-5 bg-white rounded-sm shadow-[0_10px_28px_rgba(74,59,92,0.18)] ${rotate} hover:rotate-0 hover:scale-[1.02] transition-transform duration-300 relative cursor-pointer h-32 flex items-center justify-center overflow-hidden`}
+        className={`break-inside-avoid mb-3 bg-white rounded-sm shadow-[0_10px_28px_rgba(74,59,92,0.18)] ${rotate} hover:rotate-0 hover:scale-[1.02] transition-transform duration-300 relative cursor-pointer h-20 flex items-center justify-center overflow-hidden max-w-xs`}
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}
       >
         <span
-          className={`absolute -top-2.5 left-1/2 -translate-x-1/2 w-14 h-5 rounded-sm ${tape} rotate-[-3deg] shadow-sm`}
+          className={`absolute -top-2.5 left-1/2 -translate-x-1/2 w-8 h-2.5 rounded-sm ${tape} rotate-[-3deg] shadow-sm`}
           aria-hidden="true"
         />
         <div
-          className={`absolute inset-0 bg-gradient-to-b from-lavender-light to-lavender transition-all duration-300 flex flex-col items-center justify-center p-4 ${
+          className={`absolute inset-0 bg-gradient-to-b from-lavender-light to-lavender transition-all duration-300 flex flex-col items-center justify-center p-3 ${
             isOpen ? "opacity-0 scale-95" : "opacity-100 scale-100"
           }`}
         >
-          <p className="font-display text-plum text-center text-lg font-semibold">
+          <p className="font-display text-plum text-center text-sm font-semibold">
             {wish.name}
           </p>
-          <p className="text-plum-light text-xs mt-1">✉️</p>
+          <p className="text-plum-light text-xs mt-0.5">✉️</p>
         </div>
 
         <div
-          className={`absolute inset-0 bg-white p-4 flex items-center justify-center transition-all duration-300 ${
+          className={`absolute inset-0 bg-white p-3 flex items-center justify-center transition-all duration-300 ${
             isOpen ? "opacity-100 scale-100" : "opacity-0 scale-95"
           }`}
         >
-          <p className="font-body text-plum text-sm leading-relaxed break-words text-center">
+          <p className="font-body text-plum text-xs leading-relaxed break-words text-center">
             {wish.message}
           </p>
         </div>
@@ -55,13 +55,13 @@ function WishCard({ wish, index }) {
 
   return (
     <div
-      className={`break-inside-avoid mb-5 rounded-sm shadow-[0_10px_28px_rgba(74,59,92,0.18)] ${rotate} hover:rotate-0 hover:scale-[1.02] transition-transform duration-300 relative`}
+      className={`break-inside-avoid mb-5 rounded-sm shadow-[0_10px_28px_rgba(74,59,92,0.18)] ${rotate} hover:rotate-0 hover:scale-[1.02] transition-transform duration-300 relative max-w-xs`}
       style={{ perspective: "1000px" }}
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
     >
       <span
-        className={`absolute -top-2.5 left-1/2 -translate-x-1/2 w-14 h-5 rounded-sm ${tape} rotate-[-3deg] shadow-sm z-10`}
+        className={`absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-2.5 rounded-sm ${tape} rotate-[-3deg] shadow-sm z-10`}
         aria-hidden="true"
       />
 
@@ -75,18 +75,15 @@ function WishCard({ wish, index }) {
         {/* Front: Photo */}
         <div
           style={{ backfaceVisibility: "hidden" }}
-          className="bg-white p-3 pb-5 rounded-sm"
+          className="bg-white 
+          
+           rounded-sm"
         >
-          <div className="w-full rounded-sm overflow-hidden bg-lavender-light mb-3">
+          {/* p-2 pb-3 */}
+          <div className="w-full rounded-sm overflow-hidden bg-lavender-light mb-1.5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={wish.photo} alt="" className="w-full h-auto object-cover" />
           </div>
-          {/* <p className="font-body text-plum text-sm leading-relaxed break-words">
-            {wish.message}
-          </p> */}
-          {/* <p className="font-display italic text-plum-light text-sm mt-3 text-right">
-            — {wish.name}
-          </p> */}
         </div>
 
         {/* Back: Message */}
@@ -95,12 +92,12 @@ function WishCard({ wish, index }) {
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
           }}
-          className="bg-white p-4 pb-5 rounded-sm absolute inset-0 flex flex-col items-center justify-center"
+          className="bg-white p-2 pb-2 rounded-sm absolute inset-0 flex flex-col items-center justify-center"
         >
-          <p className="font-body text-plum text-sm leading-relaxed break-words text-center mb-4">
+          <p className="font-body text-plum text-xs leading-relaxed break-words text-center mb-3">
             {wish.message}
           </p>
-          <p className="font-display italic text-plum-light text-sm text-center">
+          <p className="font-display italic text-plum-light text-xs text-center">
             — {wish.name}
           </p>
         </div>
@@ -140,7 +137,7 @@ function WallContent() {
         <p className="uppercase tracking-[0.3em] text-xs text-lavender-dark mb-3">
           a wall of love
         </p>
-        <h1 className="font-display text-3xl md:text-4xl text-plum mb-2">
+        <h1 className="font-display text-3xl md:text-4xl text-plum mb-1.5">
           {wall.title}
         </h1>
         <p className="text-plum-light text-sm">{wall.subtitle}</p>
@@ -170,7 +167,7 @@ function WallContent() {
       )}
 
       {configured && wishes.length > 0 && (
-        <div className="max-w-5xl mx-auto columns-2 sm:columns-3 lg:columns-4 gap-5">
+        <div className="max-w-6xl mx-auto columns-4 sm:columns-5 lg:columns-6 gap-2">
           {wishes.map((wish, i) => (
             <WishCard wish={wish} index={i} key={wish.id} />
           ))}
