@@ -8,8 +8,45 @@ export default function MusicToggle({ src }) {
   const [unavailable, setUnavailable] = useState(false);
 
   useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    let cancelled = false;
+
+    const tryPlay = async () => {
+      try {
+        await audio.play();
+        if (!cancelled) setPlaying(true);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    tryPlay().then((started) => {
+      if (started || cancelled) return;
+
+      // Autoplay was blocked — start on the first interaction anywhere on
+      // the page, so he doesn't need to find or tap the music button.
+      const startOnInteraction = () => {
+        tryPlay();
+      };
+
+      const events = ["pointerdown", "keydown", "touchstart"];
+      events.forEach((event) =>
+        document.addEventListener(event, startOnInteraction, { once: true })
+      );
+
+      return () => {
+        events.forEach((event) =>
+          document.removeEventListener(event, startOnInteraction)
+        );
+      };
+    });
+
     return () => {
-      audioRef.current?.pause();
+      cancelled = true;
+      audio.pause();
     };
   }, []);
 
@@ -37,7 +74,7 @@ export default function MusicToggle({ src }) {
         ref={audioRef}
         src={src}
         loop
-        preload="none"
+        preload="auto"
         onError={() => setUnavailable(true)}
       />
       <button

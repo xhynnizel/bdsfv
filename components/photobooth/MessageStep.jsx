@@ -19,7 +19,9 @@ export default function MessageStep({
   if (sendStatus === "sent") {
     return (
       <div className="w-full max-w-md mx-auto flex flex-col items-center gap-4 text-center">
-        <p className="text-3xl">💌</p>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/images/thanks-yall.png" alt="Thanks y'all" className="w-full max-w-xs h-auto" />
+        {/* <p className="text-3xl">💌</p> */}
         <p className="font-display italic text-xl text-plum">Sent!</p>
         <p className="text-plum-light text-sm">
           {site.boyfriendName} will see your message on his wall.

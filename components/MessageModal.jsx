@@ -1,6 +1,6 @@
 "use client";
 
-export default function MessageModal({ name, message, onNameChange, onMessageChange, onClose }) {
+export default function MessageModal({ message, onMessageChange, onClose }) {
   return (
     <div
       className="fixed inset-0 z-50 bg-plum/40 backdrop-blur-sm flex items-center justify-center px-5"
@@ -19,20 +19,6 @@ export default function MessageModal({ name, message, onNameChange, onMessageCha
           >
             ×
           </button>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="modal-name" className="text-xs text-plum-light font-body">
-            Your name
-          </label>
-          <input
-            id="modal-name"
-            value={name}
-            onChange={(e) => onNameChange(e.target.value)}
-            maxLength={60}
-            placeholder="e.g. Sam"
-            className="rounded-xl border border-lavender-light px-4 py-2.5 text-sm text-plum bg-cream/60 focus:outline-none focus:ring-2 focus:ring-lavender-dark"
-          />
         </div>
 
         <div className="flex flex-col gap-1.5">

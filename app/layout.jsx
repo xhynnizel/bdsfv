@@ -1,5 +1,6 @@
 import { Fraunces, Quicksand } from "next/font/google";
 import "./globals.css";
+import GlobalProtection from "@/components/GlobalProtection";
 
 const display = Fraunces({
   subsets: ["latin"],
@@ -29,6 +30,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
       <body className="bg-cream text-plum font-body antialiased">
+        <GlobalProtection />
         {children}
       </body>
     </html>

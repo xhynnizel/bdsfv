@@ -12,7 +12,6 @@ export default function WallTeaser() {
         ref={ref}
         className="section-fade bg-white/90 rounded-3xl px-6 py-10 text-center shadow-[0_16px_50px_rgba(74,59,92,0.14)] border border-lavender-light"
       >
-        <p className="text-3xl mb-3">🧵💌</p>
         <h3 className="font-display text-2xl text-plum mb-2">
           One more surprise
         </h3>

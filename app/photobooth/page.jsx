@@ -4,6 +4,7 @@ import { useState } from "react";
 import MessageStep from "@/components/photobooth/MessageStep";
 import CaptureScreen from "@/components/photobooth/CaptureScreen";
 import DecorateStep from "@/components/photobooth/DecorateStep";
+import IntroStep from "@/components/photobooth/IntroStep";
 import { composeStrip } from "@/lib/composePhoto";
 import { compressImageDataUrl } from "@/lib/compressImage";
 import { submitWish } from "@/lib/wishes";
@@ -12,7 +13,7 @@ import { frameColors } from "@/lib/frameColors";
 import { site } from "@/lib/content";
 
 export default function PhotoboothPage() {
-  const [step, setStep] = useState("message"); // "message" | "capture" | "decorate"
+  const [step, setStep] = useState("intro"); // "intro" | "message" | "capture" | "decorate"
 
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
@@ -50,7 +51,7 @@ export default function PhotoboothPage() {
   };
 
   const handleDownload = async () => {
-    const url = finalUrl || (await renderFinal());
+    const url = await renderFinal();
     if (!url) return;
     const a = document.createElement("a");
     a.href = url;
@@ -64,7 +65,7 @@ export default function PhotoboothPage() {
     try {
       let compressedPhoto = null;
       if (hasPhoto) {
-        const url = finalUrl || (await renderFinal());
+        const url = await renderFinal();
         compressedPhoto = await compressImageDataUrl(url);
       }
       await submitWish({ name, message, photo: compressedPhoto });
@@ -82,9 +83,17 @@ export default function PhotoboothPage() {
           {site.boyfriendName}'s birthday
         </p>
         <h1 className="font-display text-3xl md:text-4xl text-plum">
-          {step === "message" ? "Send a message" : step === "capture" ? "Photobooth" : "Decorate"}
+          {step === "intro"
+            ? "Before you dive in"
+            : step === "message"
+            ? "Send a message"
+            : step === "capture"
+            ? "Photobooth"
+            : "Decorate"}
         </h1>
       </header>
+
+      {step === "intro" && <IntroStep onContinue={() => setStep("message")} />}
 
       {step === "message" && (
         <MessageStep

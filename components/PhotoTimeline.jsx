@@ -49,7 +49,7 @@ export default function PhotoTimeline() {
           a little scrapbook
         </p>
         <h2 className="font-display text-3xl md:text-4xl text-plum">
-          You, through decades...
+          You, through every season...
         </h2>
       </div>
 

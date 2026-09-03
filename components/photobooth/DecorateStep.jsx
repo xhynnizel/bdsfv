@@ -7,10 +7,17 @@ import { frames } from "@/lib/frames";
 import { frameColors } from "@/lib/frameColors";
 import { frameOverlays } from "@/lib/frameOverlays";
 import { stickers } from "@/lib/stickers";
+import {
+  PLACED_STICKER_DEFAULT_SIZE,
+  PLACED_STICKER_MIN_SIZE,
+  PLACED_STICKER_MAX_SIZE,
+} from "@/lib/photoboothConfig";
 
 function makeId() {
   return `s_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
+
+const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 
 export default function DecorateStep({
   photos,
@@ -32,11 +39,12 @@ export default function DecorateStep({
   onBack,
 }) {
   const compatibleFrames = frames.filter((f) => f.count === layout.count);
-  const isColorFrame = frameSelection.type === "color";
   const [showMessageModal, setShowMessageModal] = useState(false);
 
   const stripRef = useRef(null);
   const dragRef = useRef(null);
+  const resizeRef = useRef(null);
+  const rotateRef = useRef(null);
   const [ghost, setGhost] = useState(null);
 
   const chooseColor = (color) => {
@@ -47,8 +55,6 @@ export default function DecorateStep({
     setFrameSelection({ type: "design", ...frame, src: frame.bgImage });
     setPlacedStickers([]);
   };
-
-  const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 
   const finishDrag = useCallback(
     (clientX, clientY) => {
@@ -74,7 +80,10 @@ export default function DecorateStep({
       const y = clamp((clientY - rect.top) / rect.height, 0.04, 0.96);
 
       if (drag.isNew) {
-        setPlacedStickers((prev) => [...prev, { id: drag.id, emoji: drag.emoji, x, y }]);
+        setPlacedStickers((prev) => [
+          ...prev,
+          { id: drag.id, src: drag.src, x, y, size: PLACED_STICKER_DEFAULT_SIZE, rotation: 0 },
+        ]);
       } else {
         setPlacedStickers((prev) => prev.map((s) => (s.id === drag.id ? { ...s, x, y } : s)));
       }
@@ -84,34 +93,82 @@ export default function DecorateStep({
 
   useEffect(() => {
     const handleMove = (e) => {
-      if (!dragRef.current) return;
       const point = e.touches ? e.touches[0] : e;
+
+      if (resizeRef.current) {
+        const rect = stripRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        const { id, startSize, startX } = resizeRef.current;
+        const deltaFraction = (point.clientX - startX) / rect.width;
+        const nextSize = clamp(startSize + deltaFraction, PLACED_STICKER_MIN_SIZE, PLACED_STICKER_MAX_SIZE);
+        setPlacedStickers((prev) => prev.map((s) => (s.id === id ? { ...s, size: nextSize } : s)));
+        return;
+      }
+
+      if (rotateRef.current) {
+        const { id, startRotation, centerX, centerY, startAngle } = rotateRef.current;
+        const angle = Math.atan2(point.clientY - centerY, point.clientX - centerX) * (180 / Math.PI);
+        const nextRotation = startRotation + (angle - startAngle);
+        setPlacedStickers((prev) => prev.map((s) => (s.id === id ? { ...s, rotation: nextRotation } : s)));
+        return;
+      }
+
+      if (!dragRef.current) return;
       setGhost((g) => (g ? { ...g, x: point.clientX, y: point.clientY } : g));
     };
+
     const handleUp = (e) => {
+      if (resizeRef.current) {
+        resizeRef.current = null;
+        return;
+      }
+      if (rotateRef.current) {
+        rotateRef.current = null;
+        return;
+      }
       if (!dragRef.current) return;
       const point = e.changedTouches ? e.changedTouches[0] : e;
       finishDrag(point.clientX, point.clientY);
     };
+
     window.addEventListener("pointermove", handleMove);
     window.addEventListener("pointerup", handleUp);
     return () => {
       window.removeEventListener("pointermove", handleMove);
       window.removeEventListener("pointerup", handleUp);
     };
-  }, [finishDrag]);
+  }, [finishDrag, setPlacedStickers]);
 
-  const startTrayDrag = (e, emoji) => {
+  const startTrayDrag = (e, src) => {
     e.preventDefault();
-    dragRef.current = { id: makeId(), emoji, isNew: true };
-    setGhost({ emoji, x: e.clientX, y: e.clientY });
+    dragRef.current = { id: makeId(), src, isNew: true };
+    setGhost({ src, x: e.clientX, y: e.clientY });
   };
 
-  const startStickerDrag = (e, id, emoji) => {
+  const startStickerDrag = (e, id, src) => {
     e.preventDefault();
     e.stopPropagation();
-    dragRef.current = { id, emoji, isNew: false };
-    setGhost({ emoji, x: e.clientX, y: e.clientY });
+    dragRef.current = { id, src, isNew: false };
+    setGhost({ src, x: e.clientX, y: e.clientY });
+  };
+
+  const startResize = (e, id, currentSize) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const point = e.touches ? e.touches[0] : e;
+    resizeRef.current = { id, startSize: currentSize, startX: point.clientX };
+  };
+
+  const startRotate = (e, id, currentRotation, xFrac, yFrac) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const rect = stripRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const point = e.touches ? e.touches[0] : e;
+    const centerX = rect.left + xFrac * rect.width;
+    const centerY = rect.top + yFrac * rect.height;
+    const startAngle = Math.atan2(point.clientY - centerY, point.clientX - centerX) * (180 / Math.PI);
+    rotateRef.current = { id, startRotation: currentRotation, centerX, centerY, startAngle };
   };
 
   const removeSticker = (id) => {
@@ -119,6 +176,7 @@ export default function DecorateStep({
   };
 
   const canSend = name.trim().length > 0 && message.trim().length > 0;
+
 
   return (
     <div className="w-full max-w-3xl mx-auto flex flex-col items-center gap-5">
@@ -140,6 +198,8 @@ export default function DecorateStep({
             fixedOverlay={frameOverlay}
             onStickerPointerDown={startStickerDrag}
             onRemoveSticker={removeSticker}
+            onResizePointerDown={startResize}
+            onRotatePointerDown={startRotate}
           />
           <button
             onClick={onDownload}
@@ -170,6 +230,24 @@ export default function DecorateStep({
                   />
                 );
               })}
+            </div>
+          </div>
+          <div>
+            <p className="text-plum-light text-xs uppercase tracking-widest mb-2">
+              Stickers - drag onto the photo, drag a corner handle to resize or rotate
+            </p>
+            <div className="flex gap-2.5 overflow-x-auto pb-1">
+              {stickers.map((s) => (
+                <button
+                  key={s.id}
+                  onPointerDown={(e) => startTrayDrag(e, s.src)}
+                  aria-label={`Drag ${s.label} sticker`}
+                  className="shrink-0 w-11 h-11 rounded-xl bg-white/90 border border-lavender-light flex items-center justify-center p-1 touch-none cursor-grab active:cursor-grabbing shadow-sm"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={s.src} alt={s.label} className="w-full h-full object-contain pointer-events-none select-none" draggable={false} />
+                </button>
+              ))}
             </div>
           </div>
 
@@ -239,33 +317,16 @@ export default function DecorateStep({
             </div>
           </div>
 
-          <div>
-            <p className="text-plum-light text-xs uppercase tracking-widest mb-2">
-              Stickers {!isColorFrame && "(pick a color above to use these)"}
-            </p>
-            <div className={`flex gap-2.5 overflow-x-auto pb-1 ${!isColorFrame ? "opacity-40 pointer-events-none" : ""}`}>
-              {stickers.map((s) => (
-                <button
-                  key={s.id}
-                  onPointerDown={(e) => isColorFrame && startTrayDrag(e, s.emoji)}
-                  aria-label={`Drag ${s.label} sticker`}
-                  className="shrink-0 w-11 h-11 rounded-xl bg-white/90 border border-lavender-light flex items-center justify-center text-xl touch-none cursor-grab active:cursor-grabbing shadow-sm"
-                >
-                  {s.emoji}
-                </button>
-              ))}
-            </div>
-          </div>
 
           {!configured && (
             <p className="text-rose text-xs bg-rose/10 rounded-lg px-3 py-2">
-              The memory wall isn't set up yet — ask whoever made this site to
+              The memory wall isn't set up yet, ask Shane to
               finish the Firebase setup in the README.
             </p>
           )}
 
           {sendStatus === "error" && (
-            <p className="text-rose text-xs">Something went wrong sending that — mind trying again?</p>
+            <p className="text-rose text-xs">Something went wrong sending that, mind trying again?</p>
           )}
 
           <div className="flex gap-3 flex-wrap">
@@ -274,7 +335,7 @@ export default function DecorateStep({
               disabled={!canSend || sendStatus === "sending" || !configured}
               className="px-6 py-3 rounded-full bg-plum text-cream font-body font-semibold text-sm shadow-md hover:bg-plum-light transition-colors disabled:opacity-50"
             >
-              {sendStatus === "sending" ? "Sending…" : "Send"}
+              {sendStatus === "sending" ? "Sending..." : "Send"}
             </button>
             <button
               disabled={!name.trim().length}
@@ -287,22 +348,20 @@ export default function DecorateStep({
         </div>
       </div>
 
-      {/* floating drag ghost */}
       {ghost && (
-        <span
-          className="fixed z-50 pointer-events-none select-none text-4xl"
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={ghost.src}
+          alt=""
+          className="fixed z-50 pointer-events-none select-none w-16 h-16 object-contain"
           style={{ left: ghost.x, top: ghost.y, transform: "translate(-50%, -50%)" }}
           aria-hidden="true"
-        >
-          {ghost.emoji}
-        </span>
+        />
       )}
 
       {showMessageModal && (
         <MessageModal
-          name={name}
           message={message}
-          onNameChange={onNameChange}
           onMessageChange={onMessageChange}
           onClose={() => setShowMessageModal(false)}
         />
