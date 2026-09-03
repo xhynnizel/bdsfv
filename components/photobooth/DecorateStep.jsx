@@ -45,6 +45,7 @@ export default function DecorateStep({
   const dragRef = useRef(null);
   const resizeRef = useRef(null);
   const rotateRef = useRef(null);
+  const trayCandidateRef = useRef(null);
   const [ghost, setGhost] = useState(null);
 
   const chooseColor = (color) => {
@@ -113,11 +114,26 @@ export default function DecorateStep({
         return;
       }
 
+      if (trayCandidateRef.current && !dragRef.current) {
+        const { src, startX, startY } = trayCandidateRef.current;
+        const dx = point.clientX - startX;
+        const dy = point.clientY - startY;
+        if (Math.hypot(dx, dy) > 8) {
+          if (Math.abs(dy) > Math.abs(dx)) {
+            dragRef.current = { id: makeId(), src, isNew: true };
+            setGhost({ src, x: point.clientX, y: point.clientY });
+          }
+          trayCandidateRef.current = null;
+        }
+        if (!dragRef.current) return;
+      }
+
       if (!dragRef.current) return;
       setGhost((g) => (g ? { ...g, x: point.clientX, y: point.clientY } : g));
     };
 
     const handleUp = (e) => {
+      trayCandidateRef.current = null;
       if (resizeRef.current) {
         resizeRef.current = null;
         return;
@@ -131,18 +147,26 @@ export default function DecorateStep({
       finishDrag(point.clientX, point.clientY);
     };
 
+    const handleCancel = () => {
+      trayCandidateRef.current = null;
+      resizeRef.current = null;
+      rotateRef.current = null;
+      dragRef.current = null;
+      setGhost(null);
+    };
+
     window.addEventListener("pointermove", handleMove);
     window.addEventListener("pointerup", handleUp);
+    window.addEventListener("pointercancel", handleCancel);
     return () => {
       window.removeEventListener("pointermove", handleMove);
       window.removeEventListener("pointerup", handleUp);
+      window.removeEventListener("pointercancel", handleCancel);
     };
   }, [finishDrag, setPlacedStickers]);
 
   const startTrayDrag = (e, src) => {
-    e.preventDefault();
-    dragRef.current = { id: makeId(), src, isNew: true };
-    setGhost({ src, x: e.clientX, y: e.clientY });
+    trayCandidateRef.current = { src, startX: e.clientX, startY: e.clientY };
   };
 
   const startStickerDrag = (e, id, src) => {
@@ -242,7 +266,7 @@ export default function DecorateStep({
                   key={s.id}
                   onPointerDown={(e) => startTrayDrag(e, s.src)}
                   aria-label={`Drag ${s.label} sticker`}
-                  className="shrink-0 w-11 h-11 rounded-xl bg-white/90 border border-lavender-light flex items-center justify-center p-1 touch-none cursor-grab active:cursor-grabbing shadow-sm"
+                  className="shrink-0 w-11 h-11 rounded-xl bg-white/90 border border-lavender-light flex items-center justify-center p-1 touch-pan-x cursor-grab active:cursor-grabbing shadow-sm"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={s.src} alt={s.label} className="w-full h-full object-contain pointer-events-none select-none" draggable={false} />

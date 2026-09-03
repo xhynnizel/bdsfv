@@ -1,42 +1,34 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { photoboothIntro, site } from "@/lib/content";
 
 export default function IntroStep({ onContinue }) {
-  const [unfolded, setUnfolded] = useState(false);
+  const [videoStarted, setVideoStarted] = useState(false);
   const [videoWatched, setVideoWatched] = useState(false);
-  const [videoMuted, setVideoMuted] = useState(true);
+  const [videoMuted, setVideoMuted] = useState(false);
   const videoRef = useRef(null);
 
-  const canContinue = videoWatched || unfolded;
-
-  useEffect(() => {
+  const startVideo = async () => {
     const video = videoRef.current;
     if (!video) return;
-    let cancelled = false;
 
-    const tryPlay = async (muted) => {
+    try {
+      video.muted = false;
+      await video.play();
+      setVideoMuted(false);
+      setVideoStarted(true);
+    } catch {
       try {
-        video.muted = muted;
+        video.muted = true;
         await video.play();
-        if (!cancelled) setVideoMuted(muted);
-        return true;
+        setVideoMuted(true);
+        setVideoStarted(true);
       } catch {
-        return false;
+        // Playback blocked entirely — leave the play button up so they can retry.
       }
-    };
-
-    (async () => {
-      const startedWithSound = await tryPlay(false);
-      if (startedWithSound || cancelled) return;
-      await tryPlay(true);
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    }
+  };
 
   const toggleVideoMute = () => {
     const video = videoRef.current;
@@ -51,40 +43,41 @@ export default function IntroStep({ onContinue }) {
         <video
           ref={videoRef}
           src={photoboothIntro.videoSrc}
-          autoPlay
           playsInline
           disablePictureInPicture
           controlsList="nodownload noremoteplayback"
           className="w-full h-full object-cover"
           onEnded={() => setVideoWatched(true)}
         />
-        <button
-          type="button"
-          onClick={toggleVideoMute}
-          aria-label={videoMuted ? "Unmute video" : "Mute video"}
-          className="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-white/90 shadow flex items-center justify-center text-sm border border-lavender-light"
-        >
-          {videoMuted ? "🔇" : "🔊"}
-        </button>
+        {!videoStarted ? (
+          <button
+            type="button"
+            onClick={startVideo}
+            aria-label="Play video"
+            className="absolute inset-0 flex items-center justify-center bg-plum/30 hover:bg-plum/40 transition-colors text-cream text-4xl"
+          >
+            ▶️
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={toggleVideoMute}
+            aria-label={videoMuted ? "Unmute video" : "Mute video"}
+            className="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-white/90 shadow flex items-center justify-center text-sm border border-lavender-light"
+          >
+            {videoMuted ? "🔇" : "🔊"}
+          </button>
+        )}
       </div>
 
-      <div
-        className={`relative w-full bg-white/95 border border-lavender-light shadow-[0_16px_50px_rgba(74,59,92,0.14)] rounded-md px-6 py-10 md:px-12 md:py-14 transition-all duration-700 ${
-          unfolded ? "" : "cursor-pointer hover:shadow-[0_20px_60px_rgba(74,59,92,0.2)]"
-        }`}
-        onClick={() => !unfolded && setUnfolded(true)}
-        role={!unfolded ? "button" : undefined}
-        tabIndex={!unfolded ? 0 : undefined}
-        onKeyDown={(e) => {
-          if (!unfolded && (e.key === "Enter" || e.key === " ")) setUnfolded(true);
-        }}
-        aria-label={!unfolded ? "Open the letter" : undefined}
-      >
-        {!unfolded ? (
+      <div className="relative w-full bg-white/95 border border-lavender-light shadow-[0_16px_50px_rgba(74,59,92,0.14)] rounded-md px-6 py-10 md:px-12 md:py-14 transition-all duration-700">
+        {!videoWatched ? (
           <div className="flex flex-col items-center gap-3 py-10">
             <span className="text-3xl">✉️</span>
-            <p className="font-display italic text-plum-light text-lg">
-              Tap to read
+            <p className="font-display italic text-plum-light text-lg text-center">
+              {videoStarted
+                ? "Finish the video to open your letter"
+                : "Play the video above to begin"}
             </p>
           </div>
         ) : (
@@ -120,14 +113,14 @@ export default function IntroStep({ onContinue }) {
       <div className="flex flex-col items-center gap-2">
         <button
           onClick={onContinue}
-          disabled={!canContinue}
+          disabled={!videoWatched}
           className="px-8 py-3 rounded-full bg-plum text-cream font-body font-semibold text-sm shadow-md hover:bg-plum-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Continue
         </button>
-        {!canContinue && (
+        {!videoWatched && (
           <p className="text-plum-light text-xs text-center">
-            Watch the video or tap the letter to continue
+            Watch the video to unlock your letter
           </p>
         )}
       </div>
