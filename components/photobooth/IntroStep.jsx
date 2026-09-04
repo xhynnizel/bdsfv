@@ -69,14 +69,18 @@ export default function IntroStep({ onContinue }) {
           </button>
         )}
       </div>
-
+      <p className="text-plum-light text-xs text-center">
+        He sent me this video on Sept. 03 2026.<br/>
+        <b>He has no idea about this website. So please keep this a secret.</b><br/>
+        P.S. He did give me the permission to share this video. He just doesn't know where.
+      </p>
       <div className="relative w-full bg-white/95 border border-lavender-light shadow-[0_16px_50px_rgba(74,59,92,0.14)] rounded-md px-6 py-10 md:px-12 md:py-14 transition-all duration-700">
         {!videoWatched ? (
           <div className="flex flex-col items-center gap-3 py-10">
-            <span className="text-3xl">✉️</span>
+            {/* <span className="text-3xl">✉️</span> */}
             <p className="font-display italic text-plum-light text-lg text-center">
               {videoStarted
-                ? "Finish the video to open your letter"
+                ? "Finish the video to open this letter"
                 : "Play the video above to begin"}
             </p>
           </div>
@@ -118,11 +122,11 @@ export default function IntroStep({ onContinue }) {
         >
           Continue
         </button>
-        {!videoWatched && (
+        {/* {!videoWatched && (
           <p className="text-plum-light text-xs text-center">
             Watch the video to unlock your letter
           </p>
-        )}
+        )} */}
       </div>
     </div>
   );

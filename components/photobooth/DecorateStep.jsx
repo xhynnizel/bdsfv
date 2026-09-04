@@ -258,7 +258,7 @@ export default function DecorateStep({
           </div>
           <div>
             <p className="text-plum-light text-xs uppercase tracking-widest mb-2">
-              Stickers - drag onto the photo, drag a corner handle to resize or rotate
+              Stickers - drag upwards onto the photo, drag a corner handle to resize or rotate
             </p>
             <div className="flex gap-2.5 overflow-x-auto pb-1">
               {stickers.map((s) => (

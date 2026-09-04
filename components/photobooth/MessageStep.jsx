@@ -27,7 +27,7 @@ export default function MessageStep({
           {site.boyfriendName} will see your message on his wall.
         </p>
         <p>Again, thank you from the bottom of my heart for being part of this surprise for Viktor. Whether you are sending a photo from across town or writing a message from half a world away, your presence on this virtual wall means more to him—and to me—than words can fully express.</p>
-        <p>Thank you for taking the time to share a piece of your heart with him today. You’ve helped turn a simple birthday into a reminder that no matter where we are in the world, he is deeply loved and never walking alone.</p>
+        <p>Thank you for taking the time to share a piece of your heart with him today. </p>
       </div>
     );
   }

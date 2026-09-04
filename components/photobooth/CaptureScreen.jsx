@@ -206,7 +206,7 @@ export default function CaptureScreen({ onComplete, onBack }) {
         {/* sidebar */}
         <div className="relative flex md:flex-col gap-2 order-2 md:order-1 shrink-0">
           {[
-            { id: "grid", label: "Grid", icon: "▦" },
+            // { id: "grid", label: "Grid", icon: "▦" },
             { id: "filters", label: "Filters", icon: "◐" },
             { id: "glow", label: "Glow", icon: "✨" },
           ].map((item) => (
@@ -360,17 +360,18 @@ export default function CaptureScreen({ onComplete, onBack }) {
               disabled={status !== "ready" || isBusy}
               className="px-7 py-3.5 rounded-full bg-rose text-white font-body font-semibold text-sm shadow-md hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
             >
-              📷 Start Capture
+              {/* 📷  */}
+              Start Capture
             </button>
           )}
 
-          <p className="text-plum-light text-xs text-center max-w-xs">
+          {/* <p className="text-plum-light text-xs text-center max-w-xs">
             {allDone
               ? "Tap any photo on the side to retake it."
               : capturingIndex !== null
               ? `Capturing photo ${capturingIndex + 1} of ${layout.count}…`
               : `${layout.name} selected — tap Grid to change it.`}
-          </p>
+          </p> */}
         </div>
 
         {/* thumbnails */}

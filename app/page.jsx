@@ -24,7 +24,7 @@ export default function Home() {
       <PasswordGate
         password={wall.password}
         storageKey="home-unlocked"
-        title={`For ${site.boyfriendName} 💌`}
+        title={`For ${site.boyfriendName}`}
         subtitle="Enter the password to continue"
         onUnlock={() => router.push("/surprise")}
       >

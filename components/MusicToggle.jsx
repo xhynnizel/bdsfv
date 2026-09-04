@@ -47,6 +47,8 @@ export default function MusicToggle({ src }) {
     return () => {
       cancelled = true;
       audio.pause();
+      audio.currentTime = 0;
+      setPlaying(false);
     };
   }, []);
 
