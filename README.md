@@ -101,7 +101,7 @@ anything (and will visibly disable itself) until a real file is there.
 Two static passwords, both set in `lib/content.js`:
 
 - **`wall.password`** — Viktor needs this to open `/wall`. It defaults to his
-  birthday as MMDDYYYY (`09031996`). Change it in `lib/content.js` if you'd
+  birthday as MMDDYYYY (`********`). Change it in `lib/content.js` if you'd
   rather use something else.
 - **`adminConfig.password`** — gates a page only you should know about:
   **`/admin`**. It's not linked from anywhere in the site on purpose — you'll

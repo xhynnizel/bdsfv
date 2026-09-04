@@ -51,7 +51,7 @@ export default function MessageStep({
             value={name}
             onChange={(e) => onNameChange(e.target.value)}
             maxLength={60}
-            placeholder="e.g. Sam"
+            placeholder="e.g. Viktor"
             className="rounded-xl border border-lavender-light px-4 py-2.5 text-sm text-plum bg-cream/60 focus:outline-none focus:ring-2 focus:ring-lavender-dark"
           />
         </div>

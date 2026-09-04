@@ -42,19 +42,21 @@ function WishModal({ wish, index, isOpen, onClose }) {
   };
 
   const SPRINGNOTE_MODAL = SPRINGNOTE_IMAGES[index % SPRINGNOTE_IMAGES.length];
+  const STICKYNOTE_MODAL = STICKYNOTE_IMAGES[index % STICKYNOTE_IMAGES.length];
   const LONGNOTE_MODAL = LONGNOTE_IMAGES[index % LONGNOTE_IMAGES.length];
   const messageLength = wish.message.length + wish.name.length;
   const isLongNote = messageLength > 250;
-  const noteImage = isLongNote ? LONGNOTE_MODAL : SPRINGNOTE_MODAL;
-  const noteAspectRatio = isLongNote ? "3/5" : "3/4";
-  const noteWidth = isLongNote ? "400px" : "350px";
+  const noteImage = isLongNote ? LONGNOTE_MODAL : (wish.photo ? SPRINGNOTE_MODAL : STICKYNOTE_MODAL);
+  const noteAspectRatio = isLongNote ? "4/5" : "3/4";
+  // const noteWidth = isLongNote ? "500px" : "350px";
+  const noteWidth = "500px";
 
   return (
     <div
       style={{
         position: "fixed",
         inset: 0,
-        backgroundColor: "rgba(255, 255, 255, 0.7)",
+        backgroundColor: "rgba(255, 255, 255, 0.9)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -214,7 +216,7 @@ function WishCard({ wish, index }) {
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
             width: "100%",
-            aspectRatio: "3/5",
+            aspectRatio: "5/5",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -223,7 +225,7 @@ function WishCard({ wish, index }) {
             boxSizing: "border-box",
           }}
         >
-          <div className="text-center pointer-events-none" style={{ maxWidth: "100%" }}>
+          <div className="text-center pointer-events-none" style={{ maxWidth: "100%", paddingRight: "30px" }}>
             <p className="font-display text-plum text-xs font-bold mb-1">{wish.name}</p>
             <p className="font-body text-plum text-xs leading-tight break-words">
               {wish.message}
@@ -292,7 +294,7 @@ function WishCard({ wish, index }) {
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
             width: "100%",
-            aspectRatio: "3/4",
+            aspectRatio: "4/4",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -313,14 +315,14 @@ function WishCard({ wish, index }) {
         <div
           style={{
             position: "absolute", // Position relative to parent
-            right: "-30px", // Distance from right edge (negative extends outside)
-            top: "20px", // Distance from top edge
+            right: "0px", // Distance from right edge (negative extends outside)
+            top: "20%", // Distance from top edge
             width: "70px", // Photo width
             height: "auto", // Auto height maintains aspect ratio
             border: "3px solid white", // White border around photo
             borderRadius: "2px", // Slight corner roundness
             boxShadow: "0 4px 8px rgba(0,0,0,0.15)", // Shadow for depth
-            transform: "rotate(8deg)", // Slight tilt angle
+            transform: "rotate(10deg)", // Slight tilt angle
             zIndex: 10, // Stacking order (on top of note)
             overflow: "hidden", // Keeps image within border
           }}
@@ -364,7 +366,7 @@ function WishCard({ wish, index }) {
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
           width: "100%",
-          aspectRatio: "3/4",
+          aspectRatio: "4/4",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
