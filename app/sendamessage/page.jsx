@@ -55,7 +55,7 @@ export default function PhotoboothPage() {
     if (!url) return;
     const a = document.createElement("a");
     a.href = url;
-    a.download = "birthday-photobooth.png";
+    a.download = "viktord's-birthday-photostrip.png";
     a.click();
   };
 
