@@ -16,10 +16,10 @@ body {
   -webkit-user-select: none;
   user-select: none; */
 }
-img, video {
+/* img, video { */
   /* Prevents dragging or long-pressing to save images on mobile */
   /* pointer-events: none; */
-}
+/* } */
 input,
 textarea,
 [contenteditable="true"] {
