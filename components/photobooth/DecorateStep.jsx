@@ -99,78 +99,83 @@ export default function DecorateStep({
     [setPlacedStickers]
   );
 
-  useEffect(() => {
-    const handleMove = (e) => {
-      const point = e.touches ? e.touches[0] : e;
+useEffect(() => {
+  const handleMove = (e) => {
+    const point = e.touches ? e.touches[0] : e;
+    const isTouch = Boolean(e.touches);
 
-      if (resizeRef.current) {
-        const rect = stripRef.current?.getBoundingClientRect();
-        if (!rect) return;
-        const { id, startSize, startX } = resizeRef.current;
-        const deltaFraction = (point.clientX - startX) / rect.width;
-        const nextSize = clamp(startSize + deltaFraction, PLACED_STICKER_MIN_SIZE, PLACED_STICKER_MAX_SIZE);
-        setPlacedStickers((prev) => prev.map((s) => (s.id === id ? { ...s, size: nextSize } : s)));
-        return;
-      }
+    if (resizeRef.current) {
+      const rect = stripRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const { id, startSize, startX } = resizeRef.current;
+      const deltaFraction = (point.clientX - startX) / rect.width;
+      const nextSize = clamp(startSize + deltaFraction, PLACED_STICKER_MIN_SIZE, PLACED_STICKER_MAX_SIZE);
+      setPlacedStickers((prev) => prev.map((s) => (s.id === id ? { ...s, size: nextSize } : s)));
+      return;
+    }
 
-      if (rotateRef.current) {
-        const { id, startRotation, centerX, centerY, startAngle } = rotateRef.current;
-        const angle = Math.atan2(point.clientY - centerY, point.clientX - centerX) * (180 / Math.PI);
-        const nextRotation = startRotation + (angle - startAngle);
-        setPlacedStickers((prev) => prev.map((s) => (s.id === id ? { ...s, rotation: nextRotation } : s)));
-        return;
-      }
+    if (rotateRef.current) {
+      const { id, startRotation, centerX, centerY, startAngle } = rotateRef.current;
+      const angle = Math.atan2(point.clientY - centerY, point.clientX - centerX) * (180 / Math.PI);
+      const nextRotation = startRotation + (angle - startAngle);
+      setPlacedStickers((prev) => prev.map((s) => (s.id === id ? { ...s, rotation: nextRotation } : s)));
+      return;
+    }
 
-      if (trayCandidateRef.current && !dragRef.current) {
-        const { src, startX, startY } = trayCandidateRef.current;
-        const dx = point.clientX - startX;
-        const dy = point.clientY - startY;
-        if (Math.hypot(dx, dy) > 8) {
-          if (Math.abs(dy) > Math.abs(dx)) {
-            dragRef.current = { id: makeId(), src, isNew: true };
-            setGhost({ src, x: point.clientX, y: point.clientY });
-          }
-          trayCandidateRef.current = null;
+    if (trayCandidateRef.current && !dragRef.current) {
+      const { src, startX, startY } = trayCandidateRef.current;
+      const dx = point.clientX - startX;
+      const dy = point.clientY - startY;
+      const distance = Math.hypot(dx, dy);
+
+      if (distance > 5) {
+        // On mobile (touch), require upward drag so side-scrolling the tray isn't interrupted.
+        // On desktop (mouse/pointer), allow dragging in ANY direction immediately.
+        if (!isTouch || Math.abs(dy) > Math.abs(dx)) {
+          dragRef.current = { id: makeId(), src, isNew: true };
+          setGhost({ src, x: point.clientX, y: point.clientY });
         }
-        if (!dragRef.current) return;
-      }
-
-      if (!dragRef.current) return;
-      setGhost((g) => (g ? { ...g, x: point.clientX, y: point.clientY } : g));
-    };
-
-    const handleUp = (e) => {
-      trayCandidateRef.current = null;
-      if (resizeRef.current) {
-        resizeRef.current = null;
-        return;
-      }
-      if (rotateRef.current) {
-        rotateRef.current = null;
-        return;
+        trayCandidateRef.current = null;
       }
       if (!dragRef.current) return;
-      const point = e.changedTouches ? e.changedTouches[0] : e;
-      finishDrag(point.clientX, point.clientY);
-    };
+    }
 
-    const handleCancel = () => {
-      trayCandidateRef.current = null;
+    if (!dragRef.current) return;
+    setGhost((g) => (g ? { ...g, x: point.clientX, y: point.clientY } : g));
+  };
+
+  const handleUp = (e) => {
+    trayCandidateRef.current = null;
+    if (resizeRef.current) {
       resizeRef.current = null;
+      return;
+    }
+    if (rotateRef.current) {
       rotateRef.current = null;
-      dragRef.current = null;
-      setGhost(null);
-    };
+      return;
+    }
+    if (!dragRef.current) return;
+    const point = e.changedTouches ? e.changedTouches[0] : e;
+    finishDrag(point.clientX, point.clientY);
+  };
 
-    window.addEventListener("pointermove", handleMove);
-    window.addEventListener("pointerup", handleUp);
-    window.addEventListener("pointercancel", handleCancel);
-    return () => {
-      window.removeEventListener("pointermove", handleMove);
-      window.removeEventListener("pointerup", handleUp);
-      window.removeEventListener("pointercancel", handleCancel);
-    };
-  }, [finishDrag, setPlacedStickers]);
+  const handleCancel = () => {
+    trayCandidateRef.current = null;
+    resizeRef.current = null;
+    rotateRef.current = null;
+    dragRef.current = null;
+    setGhost(null);
+  };
+
+  window.addEventListener("pointermove", handleMove);
+  window.addEventListener("pointerup", handleUp);
+  window.addEventListener("pointercancel", handleCancel);
+  return () => {
+    window.removeEventListener("pointermove", handleMove);
+    window.removeEventListener("pointerup", handleUp);
+    window.removeEventListener("pointercancel", handleCancel);
+  };
+}, [finishDrag, setPlacedStickers]);
 
   const startTrayDrag = (e, src) => {
     trayCandidateRef.current = { src, startX: e.clientX, startY: e.clientY };
@@ -230,27 +235,100 @@ export default function DecorateStep({
       </div>
     </div>
   );
+const STICKER_CATEGORIES = [
+  { id: "all", label: "All" },
+  { id: "viktor-cut-outs", label: "Viktor Cut-Outs" },
+  { id: "cats", label: "Cats" },
+  { id: "food", label: "Food" },
+  // { id: "phrase", label: "Phrases" },
+  { id: "others", label: "Others" },
+];
 
-  const StickersSection = () => (
-    <div>
+const StickersSection = () => {
+const [selectedCategory, setSelectedCategory] = useState("all");
+
+  // Dynamically extract all unique categories present in the stickers array
+  const categories = Array.from(
+    new Set(stickers.map((s) => s.category || "others"))
+  );
+
+  const filteredStickers =
+    selectedCategory === "all"
+      ? stickers
+      : stickers.filter((s) => (s.category || "others") === selectedCategory);
+  return (
+    <div className="w-full">
+      {/* Dynamic Instruction Text based on screen size */}
       <p className="text-plum-light text-xs uppercase tracking-widest mb-2">
-        Stickers - drag upwards onto the photo, drag a corner handle to resize or rotate
+        <span className="hidden md:inline">
+          Stickers - drag onto the photo, drag a corner handle to resize or rotate
+        </span>
+        <span className="inline md:hidden">
+          Stickers - drag upwards onto the photo, drag a corner handle to resize or rotate
+        </span>
       </p>
-      <div className="flex gap-2.5 overflow-x-auto pb-1">
+
+      {/* MOBILE VIEW */}
+      <div className="flex md:hidden flex-col gap-3">
+        {/* Category Pills - Wrapped (Non-scrollable) */}
+        <div className="flex flex-wrap gap-1.5">
+          {STICKER_CATEGORIES.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                selectedCategory === cat.id
+                  ? "bg-plum text-cream"
+                  : "bg-white/80 text-plum-light border border-lavender-light"
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Stickers Row - Horizontally Scrollable Only */}
+        <div className="flex gap-2.5 overflow-x-auto pb-2 pt-1 touch-pan-x">
+          {filteredStickers.map((s) => (
+            <button
+              key={s.id}
+              onPointerDown={(e) => startTrayDrag(e, s.src)}
+              aria-label={`Drag ${s.label} sticker`}
+              className="shrink-0 w-16 h-16 rounded-xl bg-white/90 border border-lavender-light flex items-center justify-center p-1.5 cursor-grab active:cursor-grabbing shadow-sm"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={s.src}
+                alt={s.label}
+                className="w-full h-full object-contain pointer-events-none select-none"
+                draggable={false}
+              />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="hidden md:flex flex-wrap gap-2.5 max-h-[180px] overflow-y-auto pr-1">
         {stickers.map((s) => (
           <button
             key={s.id}
             onPointerDown={(e) => startTrayDrag(e, s.src)}
             aria-label={`Drag ${s.label} sticker`}
-            className="shrink-0 w-11 h-11 rounded-xl bg-white/90 border border-lavender-light flex items-center justify-center p-1 touch-pan-x cursor-grab active:cursor-grabbing shadow-sm"
+            className="w-11 h-11 rounded-xl bg-white/90 border border-lavender-light flex items-center justify-center p-1 cursor-grab active:cursor-grabbing shadow-sm shrink-0"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={s.src} alt={s.label} className="w-full h-full object-contain pointer-events-none select-none" draggable={false} />
+            <img
+              src={s.src}
+              alt={s.label}
+              className="w-full h-full object-contain pointer-events-none select-none"
+              draggable={false}
+            />
           </button>
         ))}
       </div>
     </div>
   );
+};
 
   const FramesSection = () => (
     compatibleFrames.length > 0 ? (
