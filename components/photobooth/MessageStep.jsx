@@ -28,7 +28,64 @@ export default function MessageStep({
         </p>
         <p>Again, thank you from the bottom of my heart for being part of this surprise for Viktor. Whether you are sending a photo from across town or writing a message from half a world away, your presence on this virtual wall means more to him—and to me—than words can fully express.</p>
         <p>Thank you for taking the time to share a piece of your heart with him today. </p>
+        {/* Social Support Section */}
+        <div className="mt-6 flex flex-col items-center gap-3 w-full">
+          <p className="text-xs uppercase tracking-widest text-plum-light font-body font-semibold">
+            Connect with Viktor
+          </p>
+          <div className="flex flex-wrap justify-center items-center gap-2.5">
+            <a
+              href="https://instagram.com/viktordeee"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 bg-white/80 hover:bg-white text-plum text-xs font-body font-medium rounded-full border border-plum/10 shadow-sm transition-all hover:-translate-y-0.5"
+            >
+              Instagram ↗
+            </a>
+            <a
+              href="https://youtube.com/@viktordimitrenkoaudio?si=wCmzO5SgNsEoXKAZ"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 bg-white/80 hover:bg-white text-plum text-xs font-body font-medium rounded-full border border-plum/10 shadow-sm transition-all hover:-translate-y-0.5"
+            >
+              Personal YouTube ↗
+            </a>
+            <a
+              href="https://vk.ru/viktordeee"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 bg-white/80 hover:bg-white text-plum text-xs font-body font-medium rounded-full border border-plum/10 shadow-sm transition-all hover:-translate-y-0.5"
+            >
+              VK ↗
+            </a>
+            <a
+              href="https://dzen.ru/galereyamirovaudiobooks?share_to=link"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 bg-white/80 hover:bg-white text-plum text-xs font-body font-medium rounded-full border border-plum/10 shadow-sm transition-all hover:-translate-y-0.5"
+            >
+              Галерея Миров Dzen ↗
+            </a>
+            <a
+              href="https://youtube.com/@galereyamirovaudiobooks?si=IN_LSnKbRdcZSqeS"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 bg-white/80 hover:bg-white text-plum text-xs font-body font-medium rounded-full border border-plum/10 shadow-sm transition-all hover:-translate-y-0.5"
+            >
+              Галерея Миров YouTube:  ↗
+            </a>
+            <a
+              href="https://t.me/GalereyaMirovAudiobooks"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 bg-white/80 hover:bg-white text-plum text-xs font-body font-medium rounded-full border border-plum/10 shadow-sm transition-all hover:-translate-y-0.5"
+            >
+              Галерея Миров Telegram ↗
+            </a>
+          </div>
+        </div>
       </div>
+      
     );
   }
 

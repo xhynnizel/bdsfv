@@ -11,8 +11,15 @@ body {
   -moz-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
+  /* Disables long-press menus, callouts, and text selection on iOS/Android */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
-
+img, video {
+  /* Prevents dragging or long-pressing to save images on mobile */
+  pointer-events: none;
+}
 input,
 textarea,
 [contenteditable="true"] {

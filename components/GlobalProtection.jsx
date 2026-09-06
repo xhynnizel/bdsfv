@@ -20,7 +20,19 @@ export default function GlobalProtection() {
         (e.metaKey && key === "u") ||
         (e.ctrlKey && key === "s") ||
         (e.metaKey && key === "s");
-      if (isDevtools) e.preventDefault();
+      // Block Screenshot Shortcuts (PrintScreen, Cmd+Shift+3/4/5 on Mac, Win+Shift+S)
+      const isScreenshot =
+        e.key === "PrintScreen" ||
+        (e.metaKey && e.shiftKey && ["3", "4", "5", "s"].includes(key)) ||
+        (e.ctrlKey && key === "p"); // Block Print
+
+      if (isDevtools || isScreenshot) {
+        e.preventDefault();
+        // Clear clipboard immediately if PrintScreen was pressed
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText("");
+        }
+      }
     };
 
     const blockDrag = (e) => {
