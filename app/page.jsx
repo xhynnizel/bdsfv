@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { site, wall } from "@/lib/content";
 import PasswordGate from "@/components/PasswordGate";
 
@@ -62,8 +63,13 @@ export default function Home() {
               className="group w-full text-left bg-white/90 backdrop-blur-md rounded-3xl shadow-[0_8px_40px_rgba(74,59,92,0.18)] border border-white/60 px-5 py-4 flex items-start gap-4 animate-float"
               aria-label="Open your new message"
             >
-              <div className="shrink-0 w-11 h-11 rounded-2xl bg-gradient-to-br from-lavender to-peach flex items-center justify-center text-xl">
-                💌
+              <div className="shrink-0 w-11 h-11 rounded-2xl overflow-hidden relative shadow-inner">
+                <Image
+                  src="/photos/shane.jpg"
+                  alt="Contact photo"
+                  fill
+                  className="object-cover"
+                />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-baseline justify-between gap-2">
@@ -89,9 +95,14 @@ export default function Home() {
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                className="w-16 h-16 rounded-full bg-gradient-to-br from-lavender to-peach flex items-center justify-center text-2xl shadow-lg"
+                className="w-16 h-16 relative"
               >
-                💌
+                <Image
+                  src="/stickers/hearts/heart-pixel.png"
+                  alt="Heart sticker"
+                  fill
+                  className="object-contain"
+                />
               </motion.div>
               <p className="font-display italic text-plum-light text-lg">
                 opening…
