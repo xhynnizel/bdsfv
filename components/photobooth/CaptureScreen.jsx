@@ -370,7 +370,7 @@ export default function CaptureScreen({ onComplete, onBack }) {
               ? "Tap any photo on the side to retake it."
               : capturingIndex !== null
               ? `Capturing photo ${capturingIndex + 1} of ${layout.count}…`
-              : `${layout.name} selected — tap Grid to change it.`}
+              : `Take 3 photos continuously.`}
           </p>
         </div>
 
