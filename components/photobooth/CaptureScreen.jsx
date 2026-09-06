@@ -365,13 +365,13 @@ export default function CaptureScreen({ onComplete, onBack }) {
             </button>
           )}
 
-          {/* <p className="text-plum-light text-xs text-center max-w-xs">
+          <p className="text-plum-light text-xs text-center max-w-xs">
             {allDone
               ? "Tap any photo on the side to retake it."
               : capturingIndex !== null
               ? `Capturing photo ${capturingIndex + 1} of ${layout.count}…`
               : `${layout.name} selected — tap Grid to change it.`}
-          </p> */}
+          </p>
         </div>
 
         {/* thumbnails */}
