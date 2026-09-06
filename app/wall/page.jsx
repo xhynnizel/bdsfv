@@ -48,78 +48,50 @@ function WishModal({ wish, index, isOpen, onClose }) {
   const isLongNote = messageLength > 250;
   const noteImage = isLongNote ? LONGNOTE_MODAL : (wish.photo ? SPRINGNOTE_MODAL : STICKYNOTE_MODAL);
   const noteAspectRatio = isLongNote ? "4/5" : "3/4";
-  // const noteWidth = isLongNote ? "500px" : "350px";
-  const noteWidth = "500px";
 
   return (
     <div
+      className="fixed inset-0 bg-white/90 flex items-center justify-center z-[1000] p-4 overflow-y-auto"
       style={{
-        position: "fixed",
-        inset: 0,
-        backgroundColor: "rgba(255, 255, 255, 0.9)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1000,
         animation: isClosing ? "fadeOut 0.3s ease-out" : "fadeIn 0.3s ease-out",
       }}
       onClick={handleClose}
     >
       <div
+        className="flex flex-col md:flex-row items-center gap-6 md:gap-10 max-w-[92vw] md:max-w-none my-auto"
         style={{
-          display: "flex",
-          gap: "40px",
-          alignItems: "flex-start",
           animation: "zoomIn 0.4s ease-out",
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Note */}
+        {/* Note (Top on mobile, Left on desktop) */}
         <div
+          className="w-[350px] sm:w-[420px] md:w-[500px] shrink-0 flex items-center justify-center p-6 sm:p-8"
           style={{
             backgroundImage: `url(${noteImage})`,
             backgroundSize: "contain",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
-            width: noteWidth,
             aspectRatio: noteAspectRatio,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            overflow: "hidden",
-            padding: "30px 20px",
             boxSizing: "border-box",
-            flexShrink: 0,
           }}
         >
-          <div className="text-center" style={{ maxWidth: "100%" }}>
-            <p className="font-display text-plum text-sm font-bold mb-2">{wish.name}</p>
-            <p className="font-body text-plum text-sm leading-relaxed break-words">
+          <div className="text-center max-w-full">
+            <p className="font-display text-plum text-xs sm:text-sm font-bold mb-1 sm:mb-2">{wish.name}</p>
+            <p className="font-body text-plum text-xs sm:text-sm leading-relaxed break-words">
               {wish.message}
             </p>
           </div>
         </div>
 
-        {/* Photo */}
+        {/* Photo (Bottom on mobile, Right on desktop) */}
         {wish.photo && (
-          <div
-            style={{
-              width: "200px",
-              borderRadius: "8px",
-              overflow: "hidden",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-              flexShrink: 0,
-            }}
-          >
+          <div className="w-[160px] sm:w-[180px] md:w-[200px] rounded-lg overflow-hidden shadow-lg shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={wish.photo}
               alt=""
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
+              className="w-full h-auto object-cover"
             />
           </div>
         )}
@@ -127,24 +99,7 @@ function WishModal({ wish, index, isOpen, onClose }) {
         {/* Close button */}
         <button
           onClick={handleClose}
-          style={{
-            position: "absolute",
-            top: "20px",
-            right: "20px",
-            width: "32px",
-            height: "32px",
-            border: "none",
-            borderRadius: "50%",
-            backgroundColor: "rgba(0,0,0,0.1)",
-            cursor: "pointer",
-            fontSize: "20px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            transition: "background-color 0.2s",
-          }}
-          onMouseOver={(e) => e.target.style.backgroundColor = "rgba(0,0,0,0.2)"}
-          onMouseOut={(e) => e.target.style.backgroundColor = "rgba(0,0,0,0.1)"}
+          className="fixed top-5 right-5 w-8 h-8 border-none rounded-full bg-black/10 hover:bg-black/20 text-xl flex items-center justify-center transition-colors cursor-pointer"
         >
           ✕
         </button>
