@@ -173,11 +173,11 @@ export default function PixelEmailWall({ wishes }) {
   const [selectedIndex, setSelectedIndex] = useState(null);
 
   return (
-    <div className="w-full h-full min-h-[350px] border-4 border-plum/40 bg-white rounded-xl overflow-hidden shadow-lg flex flex-col">
+    <div className="w-full h-full min-h-[350px] border-4 border-plum/40 bg-white overflow-hidden shadow-lg flex flex-col">
       {/* Top Client Bar */}
       <div className="bg-lavender-dark/20 border-b-2 border-plum/20 px-3 py-1.5 flex items-center justify-between text-xs font-mono text-plum">
-        <span>PixelMail v1.0</span>
-        <span>{wishes.length} Messages</span>
+        <span>Online</span>
+        <span>📧 {wishes.length} Messages</span>
       </div>
 
       {/* Main Layout Container */}

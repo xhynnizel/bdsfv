@@ -383,14 +383,14 @@ function WallContent() {
             }}
           >
             <div className="flex items-center gap-3">
-              <h1 className="font-display font-bold text-plum text-lg">{wall.title} - Inbox</h1>
+              <h1 className="font-display font-bold text-plum text-lg">Inbox</h1>
             </div>
             <button
               onClick={() => setViewMode("wall")}
               className="px-4 py-1 border-4 border-plum/50 bg-gradient-to-b from-lavender-light to-lavender text-plum font-bold text-xs hover:shadow-[inset_0_2px_0_rgba(0,0,0,0.1)]"
               style={{ cursor: "pointer" }}
             >
-              ← CLASSIC VIEW
+              ← Back to the Wall of Wishes
             </button>
           </div>
 
@@ -432,8 +432,9 @@ function WallContent() {
               boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8), 0 -2px 0 rgba(0,0,0,0.1)",
             }}
           >
-            <span>📧 {wishes.length} message{wishes.length !== 1 ? "s" : ""}</span>
-            <span>Ready</span>
+            {/* <span>📧 {wishes.length} message{wishes.length !== 1 ? "s" : ""}</span>
+            <span>Online</span> */}
+            <span>&nbsp;</span>
           </div>
         </main>
       )}
