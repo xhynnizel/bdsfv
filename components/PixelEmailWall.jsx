@@ -59,7 +59,7 @@ function PixelEmailRow({ email, index, onSelect, isSelected }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-baseline gap-2">
             <span className="font-display text-sm text-plum font-bold">{email.name}</span>
-            <span className="text-xs text-plum-light/60 flex-shrink-0">now</span>
+            {/* <span className="text-xs text-plum-light/60 flex-shrink-0">now</span> */}
           </div>
           <p className="text-xs text-plum-light line-clamp-1 mt-0.5">{truncatedMessage}</p>
         </div>
