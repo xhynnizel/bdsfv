@@ -192,17 +192,17 @@ function WishCard({ wish, index }) {
         {wish.photo && (
           <div
             style={{
-              position: "absolute", // Position relative to parent
-              right: "-30px", // Distance from right edge (negative extends outside)
-              top: "50%", // Center vertically
-              width: "70px", // Photo width
-              height: "auto", // Auto height maintains aspect ratio
-              border: "3px solid white", // White border around photo
-              borderRadius: "2px", // Slight corner roundness
-              boxShadow: "0 4px 8px rgba(0,0,0,0.15)", // Shadow for depth
-              transform: "translateY(-50%) rotate(8deg)", // Center vertically and tilt right
-              zIndex: 10, // Stacking order (on top of note)
-              overflow: "hidden", // Keeps image within border
+              position: "absolute",
+              right: "-30px",
+              top: "50%",
+              width: "70px",
+              height: "auto",
+              border: "3px solid white",
+              borderRadius: "2px",
+              boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
+              transform: "translateY(-50%) rotate(8deg)",
+              zIndex: 10,
+              overflow: "hidden",
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -269,17 +269,17 @@ function WishCard({ wish, index }) {
         {/* Photo positioned on the right */}
         <div
           style={{
-            position: "absolute", // Position relative to parent
-            right: "0px", // Distance from right edge (negative extends outside)
-            top: "20%", // Distance from top edge
-            width: "70px", // Photo width
-            height: "auto", // Auto height maintains aspect ratio
-            border: "3px solid white", // White border around photo
-            borderRadius: "2px", // Slight corner roundness
-            boxShadow: "0 4px 8px rgba(0,0,0,0.15)", // Shadow for depth
-            transform: "rotate(10deg)", // Slight tilt angle
-            zIndex: 10, // Stacking order (on top of note)
-            overflow: "hidden", // Keeps image within border
+            position: "absolute",
+            right: "0px",
+            top: "20%",
+            width: "70px",
+            height: "auto",
+            border: "3px solid white",
+            borderRadius: "2px",
+            boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
+            transform: "rotate(10deg)",
+            zIndex: 10,
+            overflow: "hidden",
           }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -374,10 +374,10 @@ function WallContent() {
     <>
       {/* Inbox Mode */}
       {viewMode === "email" && (
-        <main className="min-h-[100dvh] bg-gradient-to-b from-lavender-light/30 to-peach/20 flex flex-col">
-          {/* Pixel top bar */}
+        <main className="h-screen max-h-screen bg-gradient-to-b from-lavender-light/30 to-peach/20 flex flex-col overflow-hidden">
+          {/* Sticky top bar */}
           <div
-            className="bg-gradient-to-r from-lavender to-lavender-light border-b-4 border-plum/40 px-4 py-3 flex items-center justify-between shadow-md flex-shrink-0"
+            className="sticky top-0 z-30 bg-gradient-to-r from-lavender to-lavender-light border-b-4 border-plum/40 px-4 py-3 flex items-center justify-between shadow-md flex-shrink-0"
             style={{
               boxShadow: "inset 0 1px 0 rgba(255,255,255,0.5), 0 4px 0 rgba(0,0,0,0.1)",
             }}
@@ -397,17 +397,17 @@ function WallContent() {
           {/* Main content area */}
           <div className="w-full flex-1 flex flex-col overflow-hidden">
             {!configured && (
-              <p className="text-center text-plum-light text-sm max-w-sm mx-auto bg-white/70 rounded-xl px-5 py-4 border-2 border-plum/20">
+              <p className="text-center text-plum-light text-sm max-w-sm mx-auto bg-white/70 rounded-xl px-5 py-4 border-2 border-plum/20 my-auto">
                 The wall isn't connected yet — finish the Firebase setup in the README to start collecting photos and messages here.
               </p>
             )}
 
             {configured && loading && (
-              <p className="text-center text-plum-light text-sm font-mono">Loading inbox…</p>
+              <p className="text-center text-plum-light text-sm font-mono my-auto">Loading inbox…</p>
             )}
 
             {configured && error && (
-              <p className="text-center text-rose text-sm font-mono">
+              <p className="text-center text-rose text-sm font-mono my-auto">
                 Couldn't load the inbox right now — try refreshing.
               </p>
             )}
@@ -425,9 +425,9 @@ function WallContent() {
             )}
           </div>
 
-          {/* Pixel bottom taskbar */}
+          {/* Sticky bottom taskbar */}
           <div
-            className="bg-gradient-to-r from-lavender-light/50 to-peach/50 border-t-4 border-plum/40 px-4 py-2 flex justify-between items-center text-xs text-plum-light font-mono flex-shrink-0"
+            className="sticky bottom-0 z-30 bg-gradient-to-r from-lavender-light/50 to-peach/50 border-t-4 border-plum/40 px-4 py-2 flex justify-between items-center text-xs text-plum-light font-mono flex-shrink-0"
             style={{
               boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8), 0 -2px 0 rgba(0,0,0,0.1)",
             }}
@@ -491,7 +491,7 @@ function WallContent() {
           )}
 
           {configured && wishes.length > 0 && (
-            <div className="mx-auto flex flex-wrap gap-0 justify-center px-5" style={{ maxWidth: "100%" }}>
+            <div className="mx-auto flex flex-wrap gap-7 justify-center px-5" style={{ maxWidth: "100%" }}>
               {wishes.map((wish, i) => (
                 <WishCard wish={wish} index={i} key={wish.id} />
               ))}
